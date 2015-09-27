@@ -1,0 +1,136 @@
+body {
+	background-color: #FFF;
+}
+
+form {
+	margin: 50px auto;	
+	position: relative;	
+	width: 550px;
+}
+
+.input-order {
+	padding: 5px;
+}
+
+.card-front,
+.card-back {	 
+	border-radius: 5px;
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+							0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	/*position: absolute;							*/
+	margin-top: 50px;	
+	width: 360px;	
+}
+
+.card-front {
+	background-color: #DDD; 
+	padding: 10px;	
+	position: relative;
+	z-index: 1;
+}
+.card-back {
+	background-color: #CCC;  		
+	position: absolute;
+	height: 205px;		
+	left: 120px;
+	top: 80px;	
+}
+
+form .form-group {
+	margin-bottom: .2em;
+}
+
+label, .cvv-definition {	
+	font-size: .8em;
+}
+
+.card-back .form-group {
+	margin-left: 270px;
+	margin-top: 10px;
+}
+
+.black-line {
+	background-color: #000;
+	height: 40px;
+	margin-top: 25px;
+}
+
+.cvv-definition {
+	display: block;
+	line-height: 1.5;
+}
+
+.order-data {
+	width: 470px;
+}
+
+.row
+{
+    margin-right: -5px;
+    margin-left: -5px;
+}
+
+.col 
+{
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+#first-name,
+#last-name {
+	text-transform: uppercase
+}
+
+#expiration-month,
+#expiration-year {
+	padding-left: 5px;
+}
+
+.visa {
+	text-align: right;
+}
+
+i.fa-cc-visa,
+i.fa-cc-mastercard {
+	position: absolute;	
+	left: 270px;
+	font-size: 4em;	
+}
+
+.fa-cc-visa {
+	top: 20px;
+}
+.fa-cc-mastercard {
+	top: 70px;
+}
+
+.buttons {
+	margin: 50px 160px;	
+}
+
+button.btn {
+  background-color: #CCC;
+  border: none;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 
+              0 2px 10px 0 rgba(0, 0, 0, 0.12);   
+  transition: all .2s ease-out;
+}
+
+button.btn:hover {
+  outline: none;
+  background-color: #DDD;
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 
+              0 4px 15px 0 rgba(0, 0, 0, 0.15);
+}
+
+button.btn:active {
+  outline: none;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+}  
+
+button.btn:focus,
+button.btn:visited {
+  background-color: #CCC;
+  outline: none;
+}  
