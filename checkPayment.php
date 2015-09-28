@@ -28,7 +28,7 @@
 		array_push($errorList, "Нужно заполнить номер заказа");
 	}   
 	if(empty($orderPrice)){
-		array_push($errorList, "Нужно заполнить цену заказа");
+		array_push($errorList, "Нужно заполнить стоимость заказа");
 	}		
 	if(empty($orderCurrency)){
 		array_push($errorList, "Нужно заполнить валюту заказа");	
@@ -58,7 +58,7 @@
 			"Номер заказа должен начинаться не с 0");
 	}	
 	if(!preg_match("/^\d+(\.\d{2})?$/", $orderPrice)) {
-		array_push($errorList, "Цена заказа должна быть в формате 0.00");
+		array_push($errorList, "Стоимость заказа должна быть в формате 0.00");
 	}
 	if(!preg_match("/[A-Z]{3}/", $orderCurrency)) {
 		array_push($errorList, "Валюта заказа должна содержать 3 символа в верхнем регистре");
@@ -74,10 +74,10 @@
 		array_push($errorList, "Год срока действия должен содержать 4 цифры");		
 	}
 	if(!preg_match("/^[A-Z]+$/", $firstName)) {
-		array_push($errorList, "Имя владельца должно содержать только латинские буквы верхнего регистра");
+		array_push($errorList, "Имя владельца должна содержать только латинские буквы верхнего регистра");
 	}
 	if(!preg_match("/^[A-Z]+$/", $lastName)) {
-		array_push($errorList, "Фамилия владельца должно содержать только латинские буквы верхнего регистра");
+		array_push($errorList, "Фамилия владельца должна содержать только латинские буквы верхнего регистра");
 	}
 	if(!preg_match("/[0-9]{3}/", $cvvCode)) {
 		array_push($errorList, "CVV-код должен содержать 3 цифры");
