@@ -33,7 +33,7 @@
 							<div class="col col-xs-4">
 								<label for="order-currency">Валюта</label>
 								<select class="form-control" id="order-currency" name="order-currency" 
-										ngModel="orderCurrency">
+										ng-model="orderCurrency">
 									<option ng-repeat="currency in currencies" value="{{currency}}">
 										{{currency}}
 									</option>
@@ -112,7 +112,7 @@
 						<!-- Код CVV  -->
 			 			<div class="form-group">
 			 				<label for="cvv-code">CVV</label>
-			 				<div class="form-inline" ng-class="{ 'has-error' :  paymentsForm.cvvCode.$error.	required && !paymentsForm.cvvCode.$pristine || paymentsForm.cvvCode.$error.pattern }">
+			 				<div class="form-inline" ng-class="{ 'has-error' :  paymentsForm.cvvCode.$error.required && !paymentsForm.cvvCode.$pristine || paymentsForm.cvvCode.$error.pattern }">
 			 					<input 	name="cvvCode" id="cvv-code" class="form-control" type="password" 
 			 							size="3" placeholder="000" maxlength="3" ng-model="cvvCode" required 
 			 							ng-pattern="/[0-9]{3}/"> 

@@ -1,6 +1,6 @@
 var app = angular.module("PaymentOrders", []);
 
-app.controller("formCtrl", function($scope, $http){
+app.controller("formCtrl", function($scope, $http, $timeout){
 
 	$scope.currencies = [ "RUB", "USD" ];
 	$scope.months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
@@ -28,7 +28,7 @@ app.controller("formCtrl", function($scope, $http){
 		cardNumberRequired: "Нужно заполнить номер карты",
 		cardNumberPattern: "Номер карты должен содержать 16 цифр",
 		firstNameRequired: "Нужно заполнить имя владельца",
-		firstNamePattern: "Имя владельца должна содержать только латинские буквы",
+		firstNamePattern: "Имя владельца должно содержать только латинские буквы",
 		lastNameRequired: "Нужно заполнить фамилию владельца",
 		lastNamePattern: "Фамилия владельца должна содержать только латинские буквы",
 		cvvCodeRequired: "Нужно заполнить CVV-код",
@@ -62,21 +62,23 @@ app.controller("formCtrl", function($scope, $http){
 					if (typeof data === "object") {
 						for(var i = 0; i < data.length; i++) {
 							var element = "<p class='error'>" + data[i] + "</p>";
-							$(".card-messages").append(element)
+							$(".card-messages").append(element);
 						}				
 					}
 					break;
 				//Выводим сообщение при успешном сохранении
 				case "string":
 					var element = "<p class='success'>" + data + "</p>";
-					$(".card-messages").append(element)
-					break;
+					$(".card-messages").append(element);
+					$timeout(function() {
+						$(".success").remove();
+					}, 2000);
+					break;					
 			}					
 		})
 		.error(function(){			
 			var element = "<p class='error'>" + $scope.messages.sendServerError + "</p>";
-			$(".card-messages").append(element)
-		})
-	}
-
+			$(".card-messages").append(element);
+		});
+	};
 });

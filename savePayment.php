@@ -27,7 +27,6 @@
 		header('Content-Type: application/json');
 		echo json_encode($errorList);
 		exit();
-		// die("Ошибка при определении базы данных: " . mysqli_error($link));
 	}
 
 	//Вставляем данные в таблицу
@@ -38,18 +37,15 @@
 			", " . $orderPrice . ", '" . $orderCurrency . "', " .
 			$cardNumber . ", " . $expirationMonth . ", " .
 			$expirationYear . ", '" . $firstName . "', '" .
-			$lastName . "', " . $cvvCode . ");";    			
+			$lastName . "', " . $cvvCode . ")";    			
 	
 	if(mysqli_query($link, $query)){
 		header('Content-Type: application/json');
 		echo json_encode("Оплата успешно проведена!");
-	} else {
-		//Закрываем соедение с сервером					
+	} else {			
 		array_push($errorList, "Ошибка при сохранении в БД: " . mysqli_error($link));
-		mysqli_close($link);	
 		header('Content-Type: application/json');
-		echo json_encode(json_decode($errorList));
-		exit();											
+		echo json_encode($errorList);								
 	}
 
 	//Закрываем соедение с сервером
