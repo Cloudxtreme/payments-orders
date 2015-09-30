@@ -1,14 +1,14 @@
 var app = angular.module("ShowPayments", []);
 
-app.controller("selectFormCtrl", function($scope, $http){
+app.controller("formsCtrl", function($scope, $http){
 
+	//Список возможных валют, месяцев, годов
 	$scope.currencies = [ "RUB", "USD" ];
 	$scope.months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-
-	//Определяем диапазон годов срока действия
-	//Сделаем период с текущего года + 10 лет
 	$scope.years = [];
 
+	//Определяем диапазон годов срока действия
+	//Сделаем период с текущего года + 10 лет	
 	var today = new Date();
 
 	for(var i = today.getFullYear(); i < today.getFullYear() + 10; i++) {
@@ -32,9 +32,11 @@ app.controller("selectFormCtrl", function($scope, $http){
 		lastNameRequired: "Нужно заполнить фамилию владельца",
 		lastNamePattern: "Фамилия владельца должна содержать только латинские буквы",
 		sendServerError: "Ошибка при отправке запроса серверу",
-		dataNotFound: "Данные не найдены"
+		dataNotFound: "Данные не найдены",
+		successSaveDb: "Изменения успешно сохранены"
 	}
 
+	//Выбранные из БД строки
 	$scope.selectedRows = { 
 		rows: [],
 		selected: {}
@@ -42,8 +44,8 @@ app.controller("selectFormCtrl", function($scope, $http){
     
 	//Получаем шаблон, таблица на просмотр или на редактирование
     $scope.getTemplate = function (row) {
-        if (row.id === $scope.selectedRows.selected.id) return "edit";
-        else return "display";
+        if (row.id === $scope.selectedRows.selected.id) return "angularjs/templates/edit.html";
+        else return "angularjs/templates/display.html";
     };
 
     //Обработка кнопки редактировать
@@ -52,9 +54,16 @@ app.controller("selectFormCtrl", function($scope, $http){
     };
 
     //Сохранить изменения
-    $scope.saveRow = function (index) {
-        $scope.selectedRows.rows[index] = angular.copy($scope.selectedRows.selected);
-        $scope.reset();
+    $scope.saveRow = function (index) {    	
+
+    	//Если строка не изменилась, то сохранять в БД не будем
+    	if(rowEquals($scope.selectedRows.rows[index], $scope.selectedRows.selected)) {
+    		$scope.reset();
+    		return;	
+    	}
+
+    	//Пытаемся сохранить строку в БД
+    	saveRowsDb($scope.selectedRows.selected, index);   	  	        
     };
 
     //Отмена изменений
@@ -62,6 +71,7 @@ app.controller("selectFormCtrl", function($scope, $http){
         $scope.selectedRows.selected = {};
     };
 
+	//Выборка данных
 	$scope.showPayments = function() {	
 		
 		var data = {
@@ -77,7 +87,7 @@ app.controller("selectFormCtrl", function($scope, $http){
 		$scope.selectedRows.rows = [];
 		$scope.selectedRows.selected = {};
 
-		$http.post("selectPayments.php", data)
+		$http.post("backend/selectPayments.php", data)
 		.success(function(data){
 			switch(typeof data) {											
 				case "object":
@@ -110,4 +120,107 @@ app.controller("selectFormCtrl", function($scope, $http){
 			$(".select-messages").append(element);
 		});
 	};
+
+	//Сравниваем строки, есть изменения или нет
+	function rowEquals(firstRow, secondRow) {
+
+		if(firstRow.id !== secondRow.id) {
+			return false;
+		}
+		if(firstRow.number_order !== secondRow.number_order) {
+			return false;
+		}
+		if(firstRow.price_order !== secondRow.price_order) {
+			return false;
+		}
+		if(firstRow.currency !== secondRow.currency) {
+			return false;
+		}
+		if(firstRow.card_number !== secondRow.card_number) {
+			return false;
+		}
+		if(firstRow.expiration_month !== secondRow.expiration_month) {
+			return false;
+		}
+		if(firstRow.expiration_year !== secondRow.expiration_year) {
+			return false;
+		}
+		if(firstRow.first_name !== secondRow.first_name) {
+			return false;
+		}
+		if(firstRow.last_name !== secondRow.last_name) {
+			return false;
+		}		
+		return true;
+	}
+
+	//Сохранение редактируемых строк в БД
+	function saveRowsDb(row, index) {
+		var editSuccess = false;
+
+		//Если цена только 0, то переводи ее в 0.00
+		var regExp = new RegExp("^[0]*$");
+		if(regExp.test(row.price_order)) {
+			row.price_order = "0.00";
+		}
+
+		//Так же если только 0 перед точкой, то переводим в 0.00
+		regExp = new RegExp("^[0]*(\\.\\d{2})$");
+		if(regExp.test(row.price_order)) {
+			row.price_order = "0.00";
+		}				
+		
+		var data = {
+
+	    	"id": row.id,
+			"orderNumber": row.number_order,
+			"orderPrice": row.price_order,	
+			"orderCurrency": row.currency,
+			"cardNumber": row.card_number,
+			"expirationMonth": row.expiration_month,
+			"expirationYear": row.expiration_year,
+			"firstName": row.first_name,
+			"lastName": row.last_name,			
+		}
+
+		$http.post("backend/saveEditRow.php", data)
+		.success(function(data){
+			switch(typeof data) {											
+				case "object":
+					if (typeof data === "object") {
+						//Выводим сообщения об ошибках
+						if(data[0] === "error") {
+							for(var i = 1; i < data.length; i++) {
+								var element = "<p class='error'>" + data[i] + "</p>";
+								$(".edit-messages").append(element);
+							}	
+						} else if(data[0] === "success") {									
+							editSuccess = true;
+						} 			
+					}
+					break;
+				//Выводим любые другие сообщения
+				case "string":
+					var element = "<p class='error'>" + data + "</p>";
+					$(".select-messages").append(element);
+					break;
+			}
+		})
+		.error(function(){
+			var element = "<p class='error'>" + $scope.messages.sendServerError + "</p>";
+			$(".edit-messages").append(element);
+		})
+		.then(function(){
+			//После выполнения запроса к серверу, проверяем, если успешно сохранилось в БД
+			//Применяем изменения и на экране
+    		if(editSuccess) {
+    			$scope.selectedRows.rows[index] = angular.copy($scope.selectedRows.selected);
+    			$scope.reset();
+    			return;
+    		}
+    		$scope.reset();			
+		}) 
+	}
+
+
 });

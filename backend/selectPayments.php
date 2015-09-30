@@ -78,7 +78,6 @@
 		$objSelectedData->htmlTable = $table;
 
 		header('Content-Type: application/json');		
-		// echo json_encode($table);
 		echo json_encode($objSelectedData);
 		mysqli_free_result($result);
 	} else {

@@ -28,7 +28,7 @@
 							<div class="col col-xs-4" ng-class="{ 'has-error' :  paymentsForm.orderPrice.$error.required && !paymentsForm.orderPrice.$pristine || paymentsForm.orderPrice.$error.pattern }">
 								<label for="order-price">Стоимость заказа</label>
 								<input 	class="form-control" id="order-price" name="orderPrice" type="text" 
-										size="10" placeholder="0.00" maxlength="10" ng-model="orderPrice" required ng-pattern="/^\d+(\.\d{2})?$/">  
+										size="10" placeholder="0.00" maxlength="10" ng-model="orderPrice" required ng-pattern="/^[0-9]+(\.\d{2})?$/">  
 							</div>
 							<div class="col col-xs-4">
 								<label for="order-currency">Валюта</label>
@@ -42,6 +42,7 @@
 						</div>
 					</div>
 				</div>
+<!-- Сообщения заказа-->				
 				<div class="order-messages">
 					<p ng-show="paymentsForm.orderNumber.$error.required && !paymentsForm.orderNumber.$pristine" class="client-error">
 						{{messages.orderNumberRequired}}
@@ -129,11 +130,11 @@
 				<button type="submit" class="btn btn-default" ng-disabled="paymentsForm.$invalid">
 					Оплатить
 				</button>
-				<a class="btn btn-default" href="./showPayments.php" role="button">
+				<a class="btn btn-default" href="showPayments.php" role="button">
 					Платежи
 				</a>	
 			</div>	
-<!-- Сообщения -->
+<!-- Сообщения карт-->
 				<div class="card-messages">
 					<p ng-show="paymentsForm.cardNumber.$error.required && !paymentsForm.cardNumber.$pristine" class="client-error">
 						{{messages.cardNumberRequired}}

@@ -102,10 +102,20 @@ sup {
 
 table th {
   font-weight: bold;
+  vertical-align: middle;
 }
 
 table .form-control {
   font-size: .8em;
   height: 25px;
   padding: 2px 4px;
+}
+
+.header-table-icons {
+  width: 60px;
+}
+
+a:focus, a:hover {
+    color: #23527c;
+    text-decoration: none;
 }

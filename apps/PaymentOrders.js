@@ -2,13 +2,13 @@ var app = angular.module("PaymentOrders", []);
 
 app.controller("formCtrl", function($scope, $http, $timeout){
 
+	//Список возможных валют, месяцев, годов
 	$scope.currencies = [ "RUB", "USD" ];
-	$scope.months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+	$scope.months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];	
+	$scope.years = [];
 
 	//Определяем диапазон годов срока действия
 	//Сделаем период с текущего года + 10 лет
-	$scope.years = [];
-
 	var today = new Date();
 
 	for(var i = today.getFullYear(); i < today.getFullYear() + 10; i++) {
@@ -36,8 +36,22 @@ app.controller("formCtrl", function($scope, $http, $timeout){
 		sendServerError: "Ошибка при отправке запроса серверу"
 	}
 
+	//Сохраняем оплаты
 	$scope.savePayments = function() {	
 		
+		//Если цена только 0, то переводи ее в 0.00
+		var regExp = new RegExp("^[0]*$");
+		if(regExp.test($scope.orderPrice)) {
+			$scope.orderPrice = "0.00";
+		}
+
+		//Так же если только 0 перед точкой, то переводим в 0.00
+		regExp = new RegExp("^[0]*(\\.\\d{2})$");
+		if(regExp.test($scope.orderPrice)) {
+			$scope.orderPrice = "0.00";
+		}		
+
+		//Данные для передачи на сервер
 		var data = {
 			"orderNumber": $scope.orderNumber,
 			"orderPrice": $scope.orderPrice,	
@@ -54,29 +68,35 @@ app.controller("formCtrl", function($scope, $http, $timeout){
 		$(".error").remove();
 		$(".success").remove();
 
-		$http.post("savePayment.php", data)
+		//Делаем запрос на сервер
+		$http.post("backend/savePayment.php", data)
 		.success(function(data){	
 			switch(typeof data) {
-				//Выводим сообщения об ошибках
 				case "object":
-					if (typeof data === "object") {
-						for(var i = 0; i < data.length; i++) {
+					//Выводим сообщения об ошибках
+					if(data[0] === "error") {
+						for(var i = 1; i < data.length; i++) {
 							var element = "<p class='error'>" + data[i] + "</p>";
 							$(".card-messages").append(element);
-						}				
-					}
-					break;
-				//Выводим сообщение при успешном сохранении
+						}	
+					} else if (data[0] === "success") {
+						//Выводим сообщение при успешном сохранении
+						var element = "<p class='success'>" + data[1] + "</p>";
+						$(".card-messages").append(element);
+						$timeout(function() {
+							$(".success").remove();
+						}, 2000);
+					}			
+					break;				
+				//Выводим любые другие сообщения
 				case "string":
-					var element = "<p class='success'>" + data + "</p>";
+					var element = "<p class='error'>" + data + "</p>";
 					$(".card-messages").append(element);
-					$timeout(function() {
-						$(".success").remove();
-					}, 2000);
-					break;					
+					break;				
 			}					
 		})
 		.error(function(){			
+			//Ошибки при отправке запроса
 			var element = "<p class='error'>" + $scope.messages.sendServerError + "</p>";
 			$(".card-messages").append(element);
 		});

@@ -1,7 +1,8 @@
 <?php
  	$data = json_decode(file_get_contents("php://input"));
  	$errorList = array();
-
+	array_push($errorList, "error");
+	
  	/* Очистка данных от мусора */
 	function clean($value = "") {
 		$value = trim($value);				//Удаление пробелов
@@ -13,6 +14,7 @@
 	}
 
 	/* Получаем данные */
+	$id	 			 = clean($data->id); 	
 	$orderNumber	 = clean($data->orderNumber); 	
 	$orderPrice		 = clean($data->orderPrice); 	
 	$orderCurrency	 = clean($data->orderCurrency); 	
@@ -20,10 +22,14 @@
 	$expirationMonth = clean($data->expirationMonth); 	
 	$expirationYear  = clean($data->expirationYear);
 	$firstName       = strtoupper(clean($data->firstName));
-	$lastName        = strtoupper(clean($data->lastName));
+	$lastName        = strtoupper(clean($data->lastName));	
 	$cvvCode         = clean($data->cvvCode);
 
 	/* Проверка данных на пустоту */
+	if(empty($id)) {
+		array_push($errorList, "Нужно заполнить ID строки");	
+	}
+
 	if(empty($orderNumber)) {
 		array_push($errorList, "Нужно заполнить номер заказа");
 	}   
@@ -48,16 +54,17 @@
 	if(empty($lastName)){
 		array_push($errorList, "Нужно заполнить фамилию владельца");
 	}       
-	if(empty($cvvCode)){
-		array_push($errorList, "Нужно заполнить CVV-код");
-	}        
-
+	
 	/* Проверка данных на соответсвие шаблонам*/
+	if(!preg_match("/^[1-9][0-9]{0,10}$/", $id)){
+		array_push($errorList, "ID строки не должен начинаться с 0 и должен содержать только цифры");	
+	}
+
 	if(!preg_match("/^[1-9][0-9]{0,9}$/", $orderNumber)) {
 		array_push($errorList, "Номер заказа должен содержать от 1 до 10 цифр",
 			"Номер заказа должен начинаться не с 0");
 	}	
-	if(!preg_match("/^\d+(\.\d{2})?$/", $orderPrice)) {
+	if(!preg_match("/^[0-9]+(\.\d{2})?$/", $orderPrice)) {
 		array_push($errorList, "Стоимость заказа должна быть в формате 0.00");
 	}
 	if(!preg_match("/[A-Z]{3}/", $orderCurrency)) {
@@ -79,9 +86,6 @@
 	if(!preg_match("/^[A-Z]+$/", $lastName)) {
 		array_push($errorList, "Фамилия владельца должна содержать только латинские буквы верхнего регистра");
 	}
-	if(!preg_match("/[0-9]{3}/", $cvvCode)) {
-		array_push($errorList, "CVV-код должен содержать 3 цифры");
-	}
 
 	$expirationMonth = (int) $expirationMonth;
 	if(!($expirationMonth >= 1 && $expirationMonth <= 12)){
@@ -97,7 +101,7 @@
 			" до " . $tenYearsMore );
 	}	
 	
-	if(!empty($errorList)) {
+	if(count($errorList) > 1) {
 		header('Content-Type: application/json');
 		echo json_encode($errorList);
 		exit();

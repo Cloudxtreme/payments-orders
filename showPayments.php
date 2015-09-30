@@ -10,7 +10,7 @@
 		<script type="text/javascript" src="jQuery/jquery-2.1.4.min.js"></script>
 		<script type="text/javascript" src="apps/ShowPayments.js"></script>
 	</head>
-	<body ng-app="ShowPayments" ng-controller="selectFormCtrl">
+	<body ng-app="ShowPayments" ng-controller="formsCtrl">
 		<!-- Критерии для выбора данных -->
 		<section class="for-select">			
 			<form ng-submit="showPayments()" name="selectForm" novalidate>
@@ -56,6 +56,7 @@
 					<div class="button-show-payments">
 						<button type="submit" class="btn btn-default" ng-disabled="selectForm.$invalid">Показать платежи</button>
 					</div>	
+					<!-- Сообщения критериев выбора -->
 					<div class="select-messages">
 						<p ng-show="selectForm.orderNumber.$error.pattern" class="client-error">
 							{{messages.orderNumberPattern}}
@@ -98,17 +99,17 @@
 								<th>Год срока действия</th>
 								<th>Имя владельца</th>
 								<th>Фамилия владельца</th>
-								<th><span class='glyphicon glyphicon-pencil'></span></th>
-								<th><span class='glyphicon glyphicon-floppy-disk'></span></th>
-								<th><span class='glyphicon glyphicon-remove'></span></th>
+								<th class="header-table-icons"></th>
 					        </thead>
 					        <tbody>
-					            <tr ng-repeat="row in selectedRows.rows" ng-include src="getTemplate(row)">
+					        	<!-- Загружаем шаблоны в зависимости от редакитрования или просмотра -->
+					            <tr ng-repeat="row in selectedRows.rows" ng-include="getTemplate(row)">
 					            </tr>
 					        </tbody>
 					    </table>				
 					</div>
-					<div class=".edit-messages">
+					<!-- Сообщения при редактировании таблицы -->
+					<div class="edit-messages">
 						<p ng-show="editForm.orderNumber.$error.required && !editForm.orderNumber.$pristine" class="client-error">
 							{{messages.orderNumberRequired}}
 						</p>
@@ -143,102 +144,5 @@
 				</div>
 			</form>
 		</section>
-		<script type="text/ng-template" id="display">
-	    	<td>{{$index+1}}</td>
-	    	<td>{{row.number_order}}</td>
-	    	<td>{{row.price_order}}</td>
-	    	<td>{{row.currency}}</td>				    	
-	    	<td>{{row.card_number}}</td>
-	    	<td>{{row.expiration_month}}</td>
-	    	<td>{{row.expiration_year}}</td>
-	    	<td>{{row.first_name}}</td>
-	    	<td>{{row.last_name}}</td>
-	    	<td>
-	    		<a href='#' ng-click="editRow(row)">
-	    			<span class='glyphicon glyphicon-pencil'></span>
-	    		</a>
-	    	</td>		
-	    	<td>
-	    		<span class='glyphicon glyphicon-floppy-disk'></span>
-	    	</td>
-	    	<td>
-	    		<span class='glyphicon glyphicon-remove'></span>
-	    	</td>		    					    					    	
-	    </script>
-	    <script type="text/ng-template" id="edit">
-	    	
-	    	<td>{{$index+1}}</td>
-	    	
-	    	<td ng-class="{ 'has-error' :  editForm.orderNumber.$error.required && !editForm.orderNumber.$pristine || editForm.orderNumber.$error.pattern }">
-	    		<input class="form-control" id="order-number" name="orderNumber" type="text"
-						size="10" placeholder="0" maxlength="10" ng-model="selectedRows.selected.number_order" 
-						required ng-pattern="/^[1-9][0-9]{0,9}$/">
-			</td>
-	    	
-	    	<td ng-class="{ 'has-error' :  editForm.orderPrice.$error.required && !editForm.orderPrice.$pristine || editForm.orderPrice.$error.pattern }">
-	    		<input class="form-control" id="order-price" name="orderPrice" type="text" 
-						size="10" placeholder="0.00" maxlength="10" ng-model="selectedRows.selected.price_order" 
-						required ng-pattern="/^\d+(\.\d{2})?$/">
-			</td>
-	    	
-	    	<td>
-	    		<select class="form-control" id="order-currency" name="order-currency" 
-						ng-model="selectedRows.selected.currency">
-					<option ng-repeat="currency in currencies" value="{{currency}}">
-						{{currency}}
-					</option>
-				</select>
-			</td>				    	
-	    	
-	    	<td ng-class="{ 'has-error' :  editForm.cardNumber.$error.required && !editForm.cardNumber.$pristine || editForm.cardNumber.$error.pattern }">
-	    		<input 	id="card-number" name="cardNumber" class="form-control" type="text"
-	    		 		size="16" placeholder="0000000000000000" maxlength="16" 
-						ng-model="selectedRows.selected.card_number" required ng-pattern="/[0-9]{16}/">
-			</td>
-	    	
-	    	<td>
-	    		<select name="expiration-month" id="expiration-month" class="form-control" 	
-						ng-model="selectedRows.selected.expiration_month"> 
-					<option ng-repeat="month in months" value="{{month}}">
-						{{month}}
-					</option>
-				</select>
-			</td>
-
-	    	<td>
-	    		<select name="expiration-year" id="expiration-year" class="form-control" 
-	    				ng-model="selectedRows.selected.expiration_year"> 
-					<option ng-repeat="year in years" value="{{year}}">
-						{{year}}
-					</option>
-				</select>
-			</td>
-
-	    	<td ng-class="{ 'has-error' :  editForm.firstName.$error.required && !editForm.firstName.$pristine || editForm.firstName.$error.pattern }">
-	    		<input 	name="firstName" id="first-name" class="form-control" type="text" 
-						size="18" placeholder="Ivan" maxlength="18" ng-model="selectedRows.selected.first_name" 
-						required ng-pattern="/^[A-Za-z]+$/"> 
-			</td>
-
-	    	<td ng-class="{ 'has-error' :  editForm.lastName.$error.required && !editForm.lastName.$pristine || editForm.lastName.$error.pattern }">
-	    		<input 	id="last-name" name="lastName"  class="form-control" type="text" 
-						size="18" placeholder="Ivanov" maxlength="18" ng-model="selectedRows.selected.last_name" 
-						required ng-pattern="/^[A-Za-z]+$/">
-			</td>
-
-	    	<td>
-	    		<span class='glyphicon glyphicon-pencil'></span>	    		
-    		</td>				    					    	
-    		<td>
-    			<a href='#' ng-click="saveRow($index)" ng-show="!editForm.$invalid">
-	    			<span class='glyphicon glyphicon-floppy-disk'></span>
-	    		</a>
-    		</td>
-    		<td>
-    		    <a href='#' ng-click="reset()">
-	    			<span class='glyphicon glyphicon-remove'></span>
-	    		</a>
-    		</td>
-	    </script>	
 	</body>
 </html>
